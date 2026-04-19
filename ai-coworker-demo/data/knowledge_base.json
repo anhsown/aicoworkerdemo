@@ -1,0 +1,32 @@
+[
+  {
+    "id": "gucci_case_1",
+    "tags": ["gucci", "leadership", "dna", "group", "brand"],
+    "text": "Gucci Group needs a group-level leadership system that strengthens talent development and inter-brand mobility without damaging individual brand identity."
+  },
+  {
+    "id": "gucci_case_2",
+    "tags": ["chro", "competency", "vision", "entrepreneurship", "passion", "trust"],
+    "text": "The shared competency framework in the simulation is organized around four themes: Vision, Entrepreneurship, Passion, and Trust."
+  },
+  {
+    "id": "gucci_case_3",
+    "tags": ["ceo", "brand", "autonomy", "strategy"],
+    "text": "The CEO cares about protecting luxury brand DNA and is skeptical of one-size-fits-all leadership frameworks that feel too generic."
+  },
+  {
+    "id": "gucci_case_4",
+    "tags": ["regional", "rollout", "training", "adoption"],
+    "text": "The Regional Manager focuses on rollout readiness, local training needs, communication plans, and adoption risks across markets."
+  },
+  {
+    "id": "gucci_case_5",
+    "tags": ["360", "coaching", "development"],
+    "text": "A key deliverable in the simulation is a 360-degree feedback and coaching program tailored to the competency framework and supported by clear privacy, communication, and coaching design."
+  },
+  {
+    "id": "gucci_case_6",
+    "tags": ["kpi", "measurement", "dashboard", "rollout"],
+    "text": "Success should be measured with both leading and lagging indicators, such as adoption, training completion, mobility, and insight dashboards for executives."
+  }
+]

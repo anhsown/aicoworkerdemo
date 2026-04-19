@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Co-Worker Demo</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --border: #d9dfeb;
+      --text: #1c1f24;
+      --muted: #6b7280;
+      --accent: #111827;
+      --user: #e8f0ff;
+      --assistant: #f7f7f8;
+    }
+    body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 24px; }
+    .card { background: var(--card); border-radius: 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.08); padding: 20px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    select, input, button, textarea { font: inherit; }
+    textarea { width: 100%; min-height: 90px; border-radius: 12px; padding: 12px; border: 1px solid var(--border); resize: vertical; }
+    select, button { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); }
+    button { cursor: pointer; background: var(--accent); color: white; }
+    button.secondary { background: white; color: var(--accent); }
+    .chat { margin-top: 16px; display: grid; gap: 12px; }
+    .msg { padding: 14px; border-radius: 14px; white-space: pre-wrap; line-height: 1.45; }
+    .user { background: var(--user); }
+    .assistant { background: var(--assistant); }
+    .meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 700; }
+    .footer { font-size: 13px; color: var(--muted); margin-top: 8px; }
+    .pill { font-size: 12px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 4px 8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="row" style="justify-content: space-between; margin-bottom: 8px;">
+        <div>
+          <h1 style="margin:0 0 4px 0;">AI Co-Worker Demo</h1>
+          <div class="footer">Multi-agent routing, mini-RAG, session memory, and role-based replies.</div>
+        </div>
+        <div class="pill">GitHub-ready prototype</div>
+      </div>
+
+      <div class="row">
+        <select id="agent">
+          <option value="">Auto route</option>
+          <option value="CEO">CEO</option>
+          <option value="CHRO">CHRO</option>
+          <option value="Regional">Regional Manager</option>
+        </select>
+        <button onclick="sendMessage()">Send</button>
+        <button class="secondary" onclick="resetChat()">Reset session</button>
+      </div>
+
+      <div style="margin-top:12px;">
+        <textarea id="message" placeholder="Ask about leadership DNA, competency model, rollout, 360 feedback, coaching, or KPI measurement..."></textarea>
+      </div>
+
+      <div class="chat" id="chat"></div>
+      <div class="footer">Tip: ask “How should we balance group DNA with brand autonomy?” or “How would you design the 360 program?”</div>
+    </div>
+  </div>
+
+<script>
+let sessionId = localStorage.getItem("coworker_session_id") || "";
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function addMessage(kind, title, body) {
+  const chat = document.getElementById("chat");
+  const div = document.createElement("div");
+  div.className = `msg ${kind}`;
+  div.innerHTML = `<div class="meta">${escapeHtml(title)}</div><div>${escapeHtml(body).replace(/\n/g, '<br>')}</div>`;
+  chat.prepend(div);
+}
+
+async function sendMessage() {
+  const text = document.getElementById("message").value.trim();
+  const preferredAgent = document.getElementById("agent").value || null;
+  if (!text) return;
+
+  addMessage("user", "You", text);
+  document.getElementById("message").value = "";
+
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: text, preferred_agent: preferredAgent, session_id: sessionId || null })
+  });
+  const data = await res.json();
+  sessionId = data.session_id;
+  localStorage.setItem("coworker_session_id", sessionId);
+
+  const title = `AI (${data.agent})`;
+  addMessage("assistant", title, data.reply);
+}
+
+async function resetChat() {
+  if (!sessionId) {
+    document.getElementById("chat").innerHTML = "";
+    return;
+  }
+  await fetch(`/reset?session_id=${encodeURIComponent(sessionId)}`, { method: "POST" });
+  localStorage.removeItem("coworker_session_id");
+  sessionId = "";
+  document.getElementById("chat").innerHTML = "";
+}
+</script>
+</body>
+</html>
